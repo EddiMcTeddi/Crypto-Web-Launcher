@@ -1,329 +1,299 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crypto Web Launcher</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crypto Web Launcher</title>
 
-    :root {
-      --bg: #000000;
-      --bg2: #0a0a0a;
-      --bg3: #111111;
-      --orange: #ff6600;
-      --orange-dim: #cc4400;
-      --white: #e8e8e8;
-      --grey: #888888;
-      --grey-dim: #444444;
-      --green: #00cc44;
-      --red: #ff2222;
-      --border: #222222;
-      --font: 'JetBrains Mono', monospace;
-    }
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    html, body {
-      background: var(--bg);
-      color: var(--white);
-      font-family: var(--font);
-      min-height: 100vh;
-      padding: 0;
-      margin: 0;
-    }
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    /* TOP BAR */
-    .topbar {
-      background: var(--orange);
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 12px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-    }
+:root{
+  --bg:#000;
+  --bg2:#0a0a0a;
+  --bg3:#111;
+  --orange:#ff6600;
+  --orange-dim:#cc4400;
+  --white:#e8e8e8;
+  --grey:#888;
+  --grey-dim:#444;
+  --green:#00cc44;
+  --red:#ff2222;
+  --border:#222;
+  --font:'JetBrains Mono', monospace;
+}
 
-    .topbar-left { display: flex; gap: 20px; align-items: center; }
-    .topbar-logo { font-size: 13px; font-weight: 800; letter-spacing: 0.15em; }
-    .topbar-right { display: flex; gap: 16px; font-size: 10px; }
+html, body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--font);
+  min-height:100vh;
+}
 
-    /* MAIN GRID */
-    .terminal {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 1px;
-      background: var(--border);
-      border-top: 1px solid var(--border);
-    }
+.topbar{
+  background:var(--orange);
+  color:#000;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:4px 12px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
 
-    .panel {
-      background: var(--bg);
-      padding: 10px 12px;
-      position: relative;
-    }
+.topbar-left,
+.topbar-right{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
 
-    .panel-header {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--orange);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--orange-dim);
-      padding-bottom: 4px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.topbar-logo{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.15em;
+}
 
-    .panel-header span { color: var(--grey); font-weight: 400; font-size: 9px; }
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:1px;
+  background:var(--border);
+}
 
-    /* STATS ROW */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1px;
-      background: var(--border);
-      grid-column: 1 / 3;
-    }
+.stat-cell{
+  background:var(--bg);
+  padding:8px 12px;
+}
 
-    .stat-cell {
-      background: var(--bg);
-      padding: 8px 12px;
-    }
+.stat-label{
+  font-size:9px;
+  color:var(--orange);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:4px;
+}
 
-    .stat-label {
-      font-size: 9px;
-      color: var(--orange);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
+.clock-big{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-1px;
+}
 
-    .stat-value {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--white);
-      font-variant-numeric: tabular-nums;
-    }
+.clock-secs{
+  color:var(--orange);
+}
 
-    .stat-sub {
-      font-size: 9px;
-      color: var(--grey);
-      margin-top: 2px;
-    }
+.stat-sub{
+  font-size:9px;
+  color:var(--grey);
+  margin-top:4px;
+}
 
-    /* CLOCK specifics */
-    .clock-big {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--white);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -1px;
-    }
+.terminal{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--border);
+}
 
-    .clock-secs { color: var(--orange); }
+.panel,
+.chart-panel{
+  background:var(--bg);
+  padding:10px 12px;
+}
 
-    /* CHART PANEL */
-    .chart-panel {
-      background: var(--bg);
-      padding: 10px 12px;
-    }
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:10px;
+  color:var(--orange);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  border-bottom:1px solid var(--orange-dim);
+  padding-bottom:4px;
+  margin-bottom:8px;
+}
 
-    .chart-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 6px;
-    }
+.panel-header span{
+  color:var(--grey);
+  font-size:9px;
+  font-weight:400;
+}
 
-    .chart-price {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--white);
-      font-variant-numeric: tabular-nums;
-    }
+.chart-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:6px;
+}
 
-    .chart-change {
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-    }
+.chart-price{
+  font-size:22px;
+  font-weight:800;
+}
 
-    .chart-hl {
-      font-size: 10px;
-      color: var(--grey);
-      text-align: right;
-      line-height: 1.6;
-    }
+.chart-change{
+  font-size:12px;
+  margin-left:8px;
+  font-weight:600;
+}
 
-    canvas {
-      width: 100%;
-      height: 120px;
-      display: block;
-    }
+.chart-hl{
+  font-size:10px;
+  color:var(--grey);
+  text-align:right;
+  line-height:1.5;
+}
 
-    /* MINI CRYPTO TABLE */
-    .mini-crypto { width: 100%; border-collapse: collapse; }
+canvas{
+  width:100%;
+  height:120px;
+  display:block;
+}
 
-    .mini-crypto tr { border-bottom: 1px solid var(--border); }
-    .mini-crypto tr:last-child { border-bottom: none; }
+.notes-area{
+  width:100%;
+  height:120px;
+  resize:none;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  color:var(--white);
+  font-family:var(--font);
+  font-size:11px;
+  padding:8px;
+  outline:none;
+}
 
-    .mini-crypto td {
-      padding: 5px 4px;
-      font-size: 11px;
-      vertical-align: middle;
-    }
+.notes-area:focus{
+  border-color:var(--orange);
+}
 
-    .mc-name { color: var(--orange); font-weight: 700; width: 40px; }
-    .mc-price { color: var(--white); font-weight: 600; font-variant-numeric: tabular-nums; }
-    .mc-change { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .mc-spark { width: 80px; padding: 0 4px; }
+.loading{
+  font-size:10px;
+  color:var(--grey);
+}
 
-    /* WEATHER */
-    .wx-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 16px;
-      margin-top: 4px;
-    }
+.err{
+  color:var(--red);
+  font-size:10px;
+}
 
-    .wx-item { }
-    .wx-label { font-size: 9px; color: var(--orange); text-transform: uppercase; letter-spacing: 0.1em; }
-    .wx-val { font-size: 18px; font-weight: 700; color: var(--white); }
-    .wx-sub { font-size: 10px; color: var(--grey); }
+.pos{ color:var(--green); }
+.neg{ color:var(--red); }
 
-    /* NOTES */
-    .notes-area {
-      width: 100%;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      color: var(--white);
-      font-family: var(--font);
-      font-size: 11px;
-      line-height: 1.7;
-      padding: 8px;
-      resize: none;
-      height: 120px;
-      outline: none;
-    }
+.rbtn{
+  background:none;
+  border:none;
+  color:var(--grey);
+  cursor:pointer;
+  font-family:var(--font);
+}
 
-    .notes-area:focus { border-color: var(--orange); }
-    .notes-area::placeholder { color: var(--grey-dim); }
+.ticker-wrap{
+  background:#0a0a0a;
+  border-top:1px solid var(--orange-dim);
+  overflow:hidden;
+  padding:5px 0;
+}
 
-    /* FEAR & GREED */
-    .fg-bar-wrap {
-      margin-top: 6px;
-      background: var(--bg3);
-      height: 8px;
-      width: 100%;
-      position: relative;
-    }
+.ticker-track{
+  display:inline-flex;
+  white-space:nowrap;
+  animation:ticker 30s linear infinite;
+}
 
-    .fg-bar {
-      height: 100%;
-      background: linear-gradient(to right, var(--red), #ff8800, var(--green));
-      width: 100%;
-      position: absolute;
-      top: 0; left: 0;
-    }
+@keyframes ticker{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
 
-    .fg-needle {
-      position: absolute;
-      top: -3px;
-      width: 2px;
-      height: 14px;
-      background: var(--white);
-      transform: translateX(-50%);
-    }
+.tick-item{
+  padding:0 32px;
+  border-right:1px solid var(--border);
+  font-size:11px;
+}
 
-    .fg-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 8px;
-      color: var(--grey);
-      margin-top: 3px;
-    }
+.tick-sym{
+  color:var(--orange);
+  margin-right:8px;
+}
 
-    .fg-value {
-      font-size: 24px;
-      font-weight: 800;
-      margin-top: 4px;
-    }
+.tick-price{
+  margin-right:6px;
+}
 
-    /* TICKER */
-    .ticker-wrap {
-      background: #0a0a0a;
-      border-top: 1px solid var(--orange-dim);
-      overflow: hidden;
-      padding: 5px 0;
-      grid-column: 1 / 3;
-    }
+.mini-crypto{
+  width:100%;
+  border-collapse:collapse;
+}
 
-    .ticker-track {
-      display: inline-flex;
-      gap: 0;
-      white-space: nowrap;
-      animation: ticker 30s linear infinite;
-      font-size: 11px;
-      font-weight: 600;
-    }
+.mini-crypto td{
+  padding:5px 4px;
+  font-size:11px;
+}
 
-    @keyframes ticker {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
+.mini-crypto tr{
+  border-bottom:1px solid var(--border);
+}
 
-    .tick-item {
-      padding: 0 32px;
-      border-right: 1px solid var(--border);
-    }
+.mc-name{
+  color:var(--orange);
+  font-weight:700;
+}
 
-    .tick-sym { color: var(--orange); margin-right: 8px; }
-    .tick-price { color: var(--white); margin-right: 6px; }
+.mc-price{
+  font-weight:600;
+}
 
-    /* REFRESH BTN */
-    .rbtn {
-      background: none;
-      border: none;
-      color: var(--grey-dim);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: var(--font);
-      padding: 0;
-      transition: color 0.15s;
-    }
-    .rbtn:hover { color: var(--orange); }
+.mc-change{
+  text-align:right;
+  font-weight:600;
+}
 
-    .pos { color: var(--green); }
-    .neg { color: var(--red); }
+.wx-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 16px;
+}
 
-    .loading { font-size: 10px; color: var(--grey); animation: blink 1s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.wx-label{
+  font-size:9px;
+  color:var(--orange);
+  text-transform:uppercase;
+}
 
-    .err { font-size: 10px; color: var(--red); }
+.wx-val{
+  font-size:18px;
+  font-weight:700;
+}
 
-    /* USDNOK */
-    .usdnok-val {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--white);
-      font-variant-numeric: tabular-nums;
-    }
-  </style>
+.usdnok-val{
+  font-size:22px;
+  font-weight:800;
+}
+</style>
 </head>
+
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <div class="topbar-left">
     <span class="topbar-logo">Crypto</span>
-    <span>Web</span><span>Launcher</span>
+    <span>Web</span>
+    <span>Launcher</span>
     <span id="tb-time">--:--:--</span>
   </div>
+
   <div class="topbar-right">
     <span>OSLO, NO</span>
     <span id="tb-date">--</span>
@@ -331,25 +301,33 @@
   </div>
 </div>
 
-<!-- SEARCH -->
-<div style="background:#000;border-bottom:1px solid #222;padding:8px 12px;display:flex;gap:6px;align-items:center">
-  <select id="search-engine" style="background:#111;border:1px solid #333;color:#ff6600;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 6px;outline:none;cursor:pointer">
+<div style="background:#000;border-bottom:1px solid #222;padding:8px 12px;display:flex;gap:6px">
+  <select id="search-engine" style="background:#111;border:1px solid #333;color:#ff6600;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 6px;">
     <option value="https://duckduckgo.com/?q=">DDG</option>
     <option value="https://www.google.com/search?q=">GOOGLE</option>
     <option value="https://www.bing.com/search?q=">BING</option>
-    <option value="https://www.startpage.com/search?q=">STARTPAGE</option>
-    <option value="https://www.perplexity.ai/search?q=">PERPLEXITY</option>
   </select>
-  <input id="search-input" type="text" placeholder="SØK..." style="flex:1;background:#0a0a0a;border:1px solid #333;border-left:2px solid #ff6600;color:#e8e8e8;font-family:'JetBrains Mono',monospace;font-size:12px;padding:5px 10px;outline:none;" />
-  <button onclick="doSearch()" style="background:#ff6600;border:none;color:#000;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;cursor:pointer;letter-spacing:0.08em">SØK</button>
+
+  <input
+    id="search-input"
+    type="text"
+    placeholder="SØK..."
+    style="flex:1;background:#0a0a0a;border:1px solid #333;border-left:2px solid #ff6600;color:#e8e8e8;font-family:'JetBrains Mono',monospace;font-size:12px;padding:5px 10px;outline:none;"
+  />
+
+  <button onclick="doSearch()" style="background:#ff6600;border:none;color:#000;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;cursor:pointer">
+    SØK
+  </button>
 </div>
 
-<!-- STATS ROW -->
 <div class="stats-row">
 
   <div class="stat-cell">
     <div class="stat-label">TIME</div>
-    <div class="clock-big"><span id="hm">--:--</span><span class="clock-secs">:<span id="secs">--</span></span></div>
+    <div class="clock-big">
+      <span id="hm">--:--</span>
+      <span class="clock-secs">:<span id="secs">--</span></span>
+    </div>
     <div class="stat-sub" id="date-full">--</div>
   </div>
 
@@ -365,7 +343,7 @@
   </div>
 
   <div class="stat-cell">
-    <div class="stat-label">FEAR &amp; GREED</div>
+    <div class="stat-label">FEAR & GREED</div>
     <div id="fg-val"><span class="loading">henter...</span></div>
   </div>
 
@@ -376,303 +354,194 @@
 
 </div>
 
-<!-- MAIN TERMINAL GRID -->
 <div class="terminal">
 
-  <!-- BTC CHART -->
   <div class="chart-panel">
     <div class="panel-header">
-      BTC/USD — 24H <span><button class="rbtn" onclick="fetchCharts()">⟳ REFRESH</button></span>
+      BTC/USD — 24H
+      <button class="rbtn" onclick="fetchCharts()">⟳ REFRESH</button>
     </div>
+
     <div class="chart-meta">
       <div>
         <span class="chart-price" id="btc-price">--</span>
         <span class="chart-change" id="btc-change">--</span>
       </div>
-      <div class="chart-hl" id="btc-hl">H: --<br>L: --</div>
+
+      <div class="chart-hl" id="btc-hl">
+        H: --<br>
+        L: --
+      </div>
     </div>
+
     <canvas id="btc-chart"></canvas>
   </div>
 
-  <!-- ETH CHART -->
   <div class="chart-panel">
     <div class="panel-header">
-      ETH/USD — 24H <span><button class="rbtn" onclick="fetchCharts()">⟳ REFRESH</button></span>
+      ETH/USD — 24H
+      <button class="rbtn" onclick="fetchCharts()">⟳ REFRESH</button>
     </div>
+
     <div class="chart-meta">
       <div>
         <span class="chart-price" id="eth-price">--</span>
         <span class="chart-change" id="eth-change">--</span>
       </div>
-      <div class="chart-hl" id="eth-hl">H: --<br>L: --</div>
+
+      <div class="chart-hl" id="eth-hl">
+        H: --<br>
+        L: --
+      </div>
     </div>
+
     <canvas id="eth-chart"></canvas>
   </div>
 
-  <!-- MINI CRYPTO -->
   <div class="panel">
-    <div class="panel-header">ALT COINS <span>LIVE</span></div>
-    <div id="mini-crypto-content"><span class="loading">henter...</span></div>
+    <div class="panel-header">ALT COINS</div>
+    <div id="mini-crypto-content">
+      <span class="loading">henter...</span>
+    </div>
   </div>
 
-  <!-- WEATHER DETAIL -->
   <div class="panel">
-    <div class="panel-header">METEOROLOGI — ASKIM <span><button class="rbtn" onclick="fetchWeather()">⟳</button></span></div>
-    <div id="wx-detail"><span class="loading">henter...</span></div>
+    <div class="panel-header">
+      METEOROLOGI — ASKIM
+    </div>
+
+    <div id="wx-detail">
+      <span class="loading">henter...</span>
+    </div>
   </div>
 
 </div>
 
-<!-- TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-track" id="ticker-track">
-    <span class="tick-item"><span class="tick-sym">BTC</span><span class="tick-price">LOADING...</span></span>
+    <span class="tick-item">LOADING...</span>
   </div>
 </div>
 
 <script>
-  /* ── CLOCK ── */
-  const DAYS = ['SØN','MAN','TIR','ONS','TOR','FRE','LØR'];
-  const MONTHS = ['JAN','FEB','MAR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DES'];
 
-  function pad(n) { return String(n).padStart(2,'0'); }
+/* CLOCK */
 
-  function getWeekNumber(d) {
-    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-  }
+const DAYS = ['SØN','MAN','TIR','ONS','TOR','FRE','LØR'];
+const MONTHS = ['JAN','FEB','MAR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DES'];
 
-  function updateClock() {
-    const now = new Date();
-    const h = pad(now.getHours()), m = pad(now.getMinutes()), s = pad(now.getSeconds());
-    document.getElementById('hm').textContent = h + ':' + m;
-    document.getElementById('secs').textContent = s;
-    document.getElementById('tb-time').textContent = h + ':' + m + ':' + s;
-    const dateStr = DAYS[now.getDay()] + ' ' + now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
-    document.getElementById('date-full').textContent = dateStr;
-    document.getElementById('tb-date').textContent = now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
-    document.getElementById('tb-week').textContent = 'WK ' + getWeekNumber(now);
-  }
+function pad(n){
+  return String(n).padStart(2,'0');
+}
 
-  setInterval(updateClock, 1000);
-  updateClock();
+function getWeekNumber(d){
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
 
-  /* ── WEATHER ── */
-  const WMO = {
-    0:'KLARVÆR',1:'NESTEN KLART',2:'DELVIS SKYET',3:'OVERSKYET',
-    45:'TÅKE',48:'RIMTÅKE',51:'LETT YR',53:'MODERAT YR',55:'KRAFTIG YR',
-    61:'LETT REGN',63:'MODERAT REGN',65:'KRAFTIG REGN',
-    71:'LETT SNØ',73:'MODERAT SNØ',75:'KRAFTIG SNØ',
-    80:'REGNBYGER',81:'MOD. REGNBYGER',82:'KRAFTIGE BYGER',
-    95:'TORDENVÆR',96:'TORDENVÆR/HAGL'
-  };
+function updateClock(){
+  const now = new Date();
 
-  async function fetchWeather() {
-    try {
-      const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.551606&longitude=11.168506&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weathercode&wind_speed_unit=ms&timezone=Europe%2FOslo');
-      const d = await r.json();
-      const c = d.current;
-      const desc = WMO[c.weathercode] || 'UKJENT';
+  const h = pad(now.getHours());
+  const m = pad(now.getMinutes());
+  const s = pad(now.getSeconds());
 
-      document.getElementById('wx-stat').innerHTML =
-        `<div style="font-size:18px;font-weight:800;color:var(--white)">${Math.round(c.temperature_2m)}°C</div>
-         <div style="font-size:9px;color:var(--grey)">${desc}</div>`;
+  document.getElementById('hm').textContent = `${h}:${m}`;
+  document.getElementById('secs').textContent = s;
+  document.getElementById('tb-time').textContent = `${h}:${m}:${s}`;
 
-      document.getElementById('wx-detail').innerHTML = `
-        <div class="wx-grid">
-          <div class="wx-item">
-            <div class="wx-label">TEMP</div>
-            <div class="wx-val">${Math.round(c.temperature_2m)}°C</div>
-            <div class="wx-sub">FEELS ${Math.round(c.apparent_temperature)}°C</div>
-          </div>
-          <div class="wx-item">
-            <div class="wx-label">FUKTIGHET</div>
-            <div class="wx-val">${c.relative_humidity_2m}%</div>
-            <div class="wx-sub">RELATIV</div>
-          </div>
-          <div class="wx-item">
-            <div class="wx-label">VIND</div>
-            <div class="wx-val">${c.wind_speed_10m}<span style="font-size:12px"> M/S</span></div>
-            <div class="wx-sub">${(c.wind_speed_10m * 3.6).toFixed(1)} KM/H</div>
-          </div>
-          <div class="wx-item">
-            <div class="wx-label">FORHOLD</div>
-            <div style="font-size:13px;font-weight:700;color:var(--white);margin-top:4px">${desc}</div>
-          </div>
-        </div>
-      `;
-    } catch(e) {
-      document.getElementById('wx-stat').innerHTML = '<span class="err">ERR</span>';
-      document.getElementById('wx-detail').innerHTML = '<span class="err">FEIL VED HENTING AV VÆR</span>';
-    }
-  }
+  const dateStr =
+    `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 
-  /* ── CHARTS ── */
-  function drawChart(canvasId, prices, color) {
-    const canvas = document.getElementById(canvasId);
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.parentElement.getBoundingClientRect();
-    const W = rect.width - 24;
-    const H = 120;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
+  document.getElementById('date-full').textContent = dateStr;
+  document.getElementById('tb-date').textContent = dateStr;
+  document.getElementById('tb-week').textContent =
+    `WK ${getWeekNumber(now)}`;
+}
 
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    const range = max - min || 1;
-    const pad = 8;
+setInterval(updateClock, 1000);
+updateClock();
 
-    // Grid lines
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = pad + ((H - pad * 2) / 4) * i;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
+/* WEATHER */
 
-    // Price line
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
-    prices.forEach((p, i) => {
-      const x = (i / (prices.length - 1)) * W;
-      const y = pad + (1 - (p - min) / range) * (H - pad * 2);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    });
-    ctx.stroke();
+const WMO = {
+  0:'KLARVÆR',
+  1:'NESTEN KLART',
+  2:'DELVIS SKYET',
+  3:'OVERSKYET',
+  45:'TÅKE',
+  61:'REGN',
+  71:'SNØ'
+};
 
-    // Fill
-    ctx.lineTo(W, H);
-    ctx.lineTo(0, H);
-    ctx.closePath();
-    ctx.fillStyle = color + '18';
-    ctx.fill();
-
-    // Current price dot
-    const lastX = W;
-    const lastY = pad + (1 - (prices[prices.length-1] - min) / range) * (H - pad * 2);
-    ctx.beginPath();
-    ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.fill();
-  }
-
-  function fmtUsd(n) {
-    return n >= 1000 ? '$' + Math.round(n).toLocaleString('no-NO') : '$' + n.toFixed(2);
-  }
-
-  async function fetchCharts() {
-    try {
-      // BTC 24h chart
-      const btcR = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1');
-      const btcD = await btcR.json();
-      const btcPrices = btcD.prices.map(p => p[1]);
-      const btcCur = btcPrices[btcPrices.length - 1];
-      const btcOpen = btcPrices[0];
-      const btcChg = ((btcCur - btcOpen) / btcOpen) * 100;
-      const btcH = Math.max(...btcPrices);
-      const btcL = Math.min(...btcPrices);
-
-      document.getElementById('btc-price').textContent = fmtUsd(btcCur);
-      const btcChgEl = document.getElementById('btc-change');
-      btcChgEl.textContent = (btcChg >= 0 ? '▲' : '▼') + Math.abs(btcChg).toFixed(2) + '%';
-      btcChgEl.className = 'chart-change ' + (btcChg >= 0 ? 'pos' : 'neg');
-      document.getElementById('btc-hl').innerHTML = `H: ${fmtUsd(btcH)}<br>L: ${fmtUsd(btcL)}`;
-      drawChart('btc-chart', btcPrices, btcChg >= 0 ? '#00cc44' : '#ff2222');
-
-      await new Promise(r => setTimeout(r, 1200)); // rate limit
-
-      // ETH 24h chart
-      const ethR = await fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1');
-      const ethD = await ethR.json();
-      const ethPrices = ethD.prices.map(p => p[1]);
-      const ethCur = ethPrices[ethPrices.length - 1];
-      const ethOpen = ethPrices[0];
-      const ethChg = ((ethCur - ethOpen) / ethOpen) * 100;
-      const ethH = Math.max(...ethPrices);
-      const ethL = Math.min(...ethPrices);
-
-      document.getElementById('eth-price').textContent = fmtUsd(ethCur);
-      const ethChgEl = document.getElementById('eth-change');
-      ethChgEl.textContent = (ethChg >= 0 ? '▲' : '▼') + Math.abs(ethChg).toFixed(2) + '%';
-      ethChgEl.className = 'chart-change ' + (ethChg >= 0 ? 'pos' : 'neg');
-      document.getElementById('eth-hl').innerHTML = `H: ${fmtUsd(ethH)}<br>L: ${fmtUsd(ethL)}`;
-      drawChart('eth-chart', ethPrices, ethChg >= 0 ? '#00cc44' : '#ff2222');
-
-    } catch(e) {
-      document.getElementById('btc-price').innerHTML = '<span class="err">API ERR</span>';
-      document.getElementById('eth-price').innerHTML = '<span class="err">API ERR</span>';
-    }
-  }
-
-  /* ── MINI CRYPTO + TICKER ── */
-  async function fetchMiniCrypto() {
-    try {
-      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd,nok&include_24hr_change=true&include_sparkline=false');
-      const d = await r.json();
-
-      const coins = [
-        { id: 'bitcoin',  sym: 'BTC', data: d.bitcoin },
-        { id: 'ethereum', sym: 'ETH', data: d.ethereum },
-        { id: 'solana',   sym: 'SOL', data: d.solana },
-        { id: 'ripple',   sym: 'XRP', data: d.ripple },
-      ];
-
-      let rows = '';
-      coins.forEach(c => {
-        const chg = c.data.usd_24h_change;
-        const cls = chg >= 0 ? 'pos' : 'neg';
-        const arr = chg >= 0 ? '▲' : '▼';
-        rows += `<tr>
-          <td class="mc-name">${c.sym}</td>
-          <td class="mc-price">${fmtUsd(c.data.usd)}</td>
-          <td class="mc-change ${cls}">${arr} ${Math.abs(chg).toFixed(2)}%</td>
-          <td style="font-size:9px;color:var(--grey);text-align:right">${Math.round(c.data.nok).toLocaleString('no-NO')} kr</td>
-        </tr>`;
-      });
-
-      document.getElementById('mini-crypto-content').innerHTML =
-        `<table class="mini-crypto">${rows}</table>`;
-
-      // Ticker
-      const items = coins.map(c => {
-        const chg = c.data.usd_24h_change;
-        const cls = chg >= 0 ? 'pos' : 'neg';
-        const arr = chg >= 0 ? '▲' : '▼';
-        return `<span class="tick-item"><span class="tick-sym">${c.sym}</span><span class="tick-price">${fmtUsd(c.data.usd)}</span><span class="${cls}">${arr} ${Math.abs(chg).toFixed(2)}%</span></span>`;
-      });
-
-      const repeated = [...items, ...items, ...items, ...items].join('');
-      document.getElementById('ticker-track').innerHTML = repeated;
-
-    } catch(e) {
-      document.getElementById('mini-crypto-content').innerHTML = '<span class="err">FEIL VED HENTING</span>';
-    }
-  }
-
-  /* ── USD/NOK ── */
-async function fetchUsdNok() {
-  try {
-    const r = await fetch('https://open.er-api.com/v6/latest/USD');
-
-    if (!r.ok) {
-      throw new Error('HTTP ERROR');
-    }
+async function fetchWeather(){
+  try{
+    const r = await fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=59.551606&longitude=11.168506&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit=ms&timezone=Europe%2FOslo'
+    );
 
     const d = await r.json();
+    const c = d.current;
 
-    if (!d.rates || !d.rates.NOK) {
-      throw new Error('NO NOK RATE');
-    }
+    const desc = WMO[c.weather_code] || 'UKJENT';
+
+    document.getElementById('wx-stat').innerHTML = `
+      <div style="font-size:18px;font-weight:800">
+        ${Math.round(c.temperature_2m)}°C
+      </div>
+      <div style="font-size:9px;color:var(--grey)">
+        ${desc}
+      </div>
+    `;
+
+    document.getElementById('wx-detail').innerHTML = `
+      <div class="wx-grid">
+
+        <div>
+          <div class="wx-label">TEMP</div>
+          <div class="wx-val">${Math.round(c.temperature_2m)}°C</div>
+        </div>
+
+        <div>
+          <div class="wx-label">FUKTIGHET</div>
+          <div class="wx-val">${c.relative_humidity_2m}%</div>
+        </div>
+
+        <div>
+          <div class="wx-label">VIND</div>
+          <div class="wx-val">${c.wind_speed_10m} M/S</div>
+        </div>
+
+        <div>
+          <div class="wx-label">FORHOLD</div>
+          <div class="wx-val" style="font-size:13px">${desc}</div>
+        </div>
+
+      </div>
+    `;
+
+  } catch(e){
+
+    console.error(e);
+
+    document.getElementById('wx-stat').innerHTML =
+      '<span class="err">ERR</span>';
+  }
+}
+
+/* USD/NOK */
+
+async function fetchUsdNok(){
+
+  try{
+
+    const r = await fetch(
+      'https://open.er-api.com/v6/latest/USD'
+    );
+
+    const d = await r.json();
 
     const rate = d.rates.NOK;
 
@@ -682,94 +551,270 @@ async function fetchUsdNok() {
     document.getElementById('usdnok-sub').textContent =
       `1 USD = ${rate.toFixed(2)} NOK`;
 
-  } catch(e) {
+  } catch(e){
+
     console.error(e);
 
     document.getElementById('usdnok-val').innerHTML =
       '<span class="err">ERR</span>';
-
-    document.getElementById('usdnok-sub').textContent =
-      'API FAIL';
   }
 }
 
-    document.getElementById('usdnok-val').innerHTML =
-      `<div class="usdnok-val">${rate.toFixed(4)}</div>`;
+/* FEAR GREED */
 
-    document.getElementById('usdnok-sub').textContent =
-      `1 USD = ${rate.toFixed(2)} NOK`;
+async function fetchFearGreed(){
 
-  } catch(e) {
-    console.error('USD/NOK FEIL:', e);
+  try{
 
-    document.getElementById('usdnok-val').innerHTML =
+    const r = await fetch(
+      'https://api.alternative.me/fng/?limit=1'
+    );
+
+    const d = await r.json();
+
+    const val = d.data[0].value;
+
+    document.getElementById('fg-val').innerHTML =
+      `<div style="font-size:24px;font-weight:800">${val}</div>`;
+
+  } catch(e){
+
+    console.error(e);
+
+    document.getElementById('fg-val').innerHTML =
       '<span class="err">ERR</span>';
-
-    document.getElementById('usdnok-sub').textContent =
-      'Kunne ikke hente valutadata';
   }
 }
-      document.getElementById('usdnok-val').innerHTML =
-        `<div class="usdnok-val">${rate.toFixed(4)}</div>`;
-      document.getElementById('usdnok-sub').textContent = '1 USD = ' + rate.toFixed(2) + ' NOK';
-    } catch(e) {
-      document.getElementById('usdnok-val').innerHTML = '<span class="err">ERR</span>';
-    }
-  }
 
-  /* ── FEAR & GREED ── */
-  async function fetchFearGreed() {
-    try {
-      const r = await fetch('https://api.alternative.me/fng/?limit=1');
-      const d = await r.json();
-      const val = parseInt(d.data[0].value);
-      const label = d.data[0].value_classification.toUpperCase();
-      let color = val < 25 ? 'var(--red)' : val < 50 ? '#ff8800' : val < 75 ? '#aacc00' : 'var(--green)';
-      document.getElementById('fg-val').innerHTML = `
-        <div class="fg-value" style="color:${color}">${val}</div>
-        <div class="fg-bar-wrap">
-          <div class="fg-bar"></div>
-          <div class="fg-needle" style="left:${val}%"></div>
-        </div>
-        <div class="fg-labels"><span>FEAR</span><span>NEUTRAL</span><span>GREED</span></div>
-      `;
-    } catch(e) {
-      document.getElementById('fg-val').innerHTML = '<span class="err">ERR</span>';
-    }
-  }
+/* CHARTS */
 
-  /* ── NOTES ── */
-  const notesKey = 'crypto_web_launcher_v1';
-  const notesEl = document.getElementById('notes-area');
-  try { notesEl.value = localStorage.getItem(notesKey) || ''; } catch(e) {}
-  notesEl.addEventListener('input', () => {
-    try { localStorage.setItem(notesKey, notesEl.value); } catch(e) {}
+function drawChart(canvasId, prices, color){
+
+  const canvas = document.getElementById(canvasId);
+
+  const ctx = canvas.getContext('2d');
+
+  const W = canvas.width = canvas.offsetWidth;
+  const H = canvas.height = 120;
+
+  ctx.clearRect(0,0,W,H);
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+
+  prices.forEach((p,i)=>{
+
+    const x = (i/(prices.length-1))*W;
+    const y = H - ((p-min)/(max-min))*H;
+
+    if(i===0){
+      ctx.moveTo(x,y);
+    } else {
+      ctx.lineTo(x,y);
+    }
   });
 
-  /* ── INIT ── */
-  fetchWeather();
-  fetchUsdNok();
-  fetchFearGreed();
-  fetchMiniCrypto();
-  setTimeout(fetchCharts, 800);
-
-  setInterval(fetchMiniCrypto, 60000);
-  setInterval(fetchCharts, 300000);
-  setInterval(fetchWeather, 300000);
-const r = await fetch('https://open.er-api.com/v6/latest/USD');
-const d = await r.json();
-const rate = d.rates.NOK;
-  setInterval(fetchFearGreed, 300000);
-function doSearch() {
-  const q = document.getElementById('search-input').value.trim();
-  if (!q) return;
-  const base = document.getElementById('search-engine').value;
-  window.open(base + encodeURIComponent(q), '_blank');
+  ctx.stroke();
 }
 
-document.getElementById('search-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
+function fmtUsd(n){
+
+  if(n >= 1000){
+    return '$' + Math.round(n).toLocaleString('no-NO');
+  }
+
+  return '$' + n.toFixed(2);
+}
+
+async function fetchCharts(){
+
+  try{
+
+    const btcR = await fetch(
+      'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1'
+    );
+
+    const btcD = await btcR.json();
+
+    const btcPrices =
+      btcD.prices.map(p => p[1]);
+
+    const btcCur =
+      btcPrices[btcPrices.length-1];
+
+    document.getElementById('btc-price').textContent =
+      fmtUsd(btcCur);
+
+    drawChart(
+      'btc-chart',
+      btcPrices,
+      '#00cc44'
+    );
+
+    const ethR = await fetch(
+      'https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1'
+    );
+
+    const ethD = await ethR.json();
+
+    const ethPrices =
+      ethD.prices.map(p => p[1]);
+
+    const ethCur =
+      ethPrices[ethPrices.length-1];
+
+    document.getElementById('eth-price').textContent =
+      fmtUsd(ethCur);
+
+    drawChart(
+      'eth-chart',
+      ethPrices,
+      '#ff6600'
+    );
+
+  } catch(e){
+
+    console.error(e);
+
+    document.getElementById('btc-price').innerHTML =
+      '<span class="err">ERR</span>';
+
+    document.getElementById('eth-price').innerHTML =
+      '<span class="err">ERR</span>';
+  }
+}
+
+/* MINI CRYPTO */
+
+async function fetchMiniCrypto(){
+
+  try{
+
+    const r = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd,nok&include_24hr_change=true'
+    );
+
+    const d = await r.json();
+
+    const coins = [
+      ['BTC', d.bitcoin],
+      ['ETH', d.ethereum],
+      ['SOL', d.solana],
+      ['XRP', d.ripple]
+    ];
+
+    let rows = '';
+    let ticker = '';
+
+    coins.forEach(c=>{
+
+      const sym = c[0];
+      const data = c[1];
+
+      const chg = data.usd_24h_change || 0;
+
+      const cls =
+        chg >= 0 ? 'pos' : 'neg';
+
+      rows += `
+        <tr>
+          <td class="mc-name">${sym}</td>
+          <td class="mc-price">${fmtUsd(data.usd)}</td>
+          <td class="mc-change ${cls}">
+            ${chg.toFixed(2)}%
+          </td>
+        </tr>
+      `;
+
+      ticker += `
+        <span class="tick-item">
+          <span class="tick-sym">${sym}</span>
+          <span class="tick-price">${fmtUsd(data.usd)}</span>
+        </span>
+      `;
+    });
+
+    document.getElementById('mini-crypto-content').innerHTML =
+      `<table class="mini-crypto">${rows}</table>`;
+
+    document.getElementById('ticker-track').innerHTML =
+      ticker + ticker;
+
+  } catch(e){
+
+    console.error(e);
+
+    document.getElementById('mini-crypto-content').innerHTML =
+      '<span class="err">ERR</span>';
+  }
+}
+
+/* NOTES */
+
+const notesKey = 'crypto_web_launcher_notes';
+
+const notesEl =
+  document.getElementById('notes-area');
+
+notesEl.value =
+  localStorage.getItem(notesKey) || '';
+
+notesEl.addEventListener('input', ()=>{
+
+  localStorage.setItem(
+    notesKey,
+    notesEl.value
+  );
 });
+
+/* SEARCH */
+
+function doSearch(){
+
+  const q =
+    document.getElementById('search-input')
+    .value
+    .trim();
+
+  if(!q) return;
+
+  const base =
+    document.getElementById('search-engine')
+    .value;
+
+  window.open(
+    base + encodeURIComponent(q),
+    '_blank'
+  );
+}
+
+document
+.getElementById('search-input')
+.addEventListener('keydown', e=>{
+
+  if(e.key === 'Enter'){
+    doSearch();
+  }
+});
+
+/* INIT */
+
+fetchWeather();
+fetchUsdNok();
+fetchFearGreed();
+fetchCharts();
+fetchMiniCrypto();
+
+setInterval(fetchWeather, 300000);
+setInterval(fetchUsdNok, 60000);
+setInterval(fetchFearGreed, 300000);
+setInterval(fetchCharts, 300000);
+setInterval(fetchMiniCrypto, 60000);
+
 </script>
 </body>
 </html>

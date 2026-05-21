@@ -678,7 +678,28 @@ async function fetchUsdNok() {
       throw new Error('Ingen NOK-rate');
     }
 
+async function fetchUsdNok() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+
+    console.log(d);
+
     const rate = d.rates.NOK;
+
+    document.getElementById('usdnok-val').innerHTML =
+      `<div class="usdnok-val">${rate.toFixed(4)}</div>`;
+
+    document.getElementById('usdnok-sub').textContent =
+      `1 USD = ${rate.toFixed(2)} NOK`;
+
+  } catch(e) {
+    console.error(e);
+
+    document.getElementById('usdnok-val').innerHTML =
+      '<span class="err">ERR</span>';
+  }
+}
 
     document.getElementById('usdnok-val').innerHTML =
       `<div class="usdnok-val">${rate.toFixed(4)}</div>`;

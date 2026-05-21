@@ -422,116 +422,36 @@ canvas{
     <span class="tick-item">LOADING...</span>
   </div>
 </div>
-
-<script>
-
-/* CLOCK */
-
-const DAYS = ['SØN','MAN','TIR','ONS','TOR','FRE','LØR'];
-const MONTHS = ['JAN','FEB','MAR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DES'];
+const DAYS=['SØN','MAN','TIR','ONS','TOR','FRE','LØR'];
+const MONTHS=['JAN','FEB','MAR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DES'];
 
 function pad(n){
   return String(n).padStart(2,'0');
 }
 
-function getWeekNumber(d){
-  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-}
-
 function updateClock(){
+
   const now = new Date();
 
   const h = pad(now.getHours());
   const m = pad(now.getMinutes());
   const s = pad(now.getSeconds());
 
-  document.getElementById('hm').textContent = `${h}:${m}`;
-  document.getElementById('secs').textContent = s;
-  document.getElementById('tb-time').textContent = `${h}:${m}:${s}`;
+  document.getElementById('hm').textContent =
+    `${h}:${m}`;
 
-  const dateStr =
-    `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('secs').textContent =
+    s;
 
-  document.getElementById('date-full').textContent = dateStr;
-  document.getElementById('tb-date').textContent = dateStr;
-  document.getElementById('tb-week').textContent =
-    `WK ${getWeekNumber(now)}`;
+  document.getElementById('tb-time').textContent =
+    `${h}:${m}:${s}`;
+
+  document.getElementById('tb-date').textContent =
+    `${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 }
 
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 updateClock();
-
-/* WEATHER */
-
-const WMO = {
-  0:'KLARVÆR',
-  1:'NESTEN KLART',
-  2:'DELVIS SKYET',
-  3:'OVERSKYET',
-  45:'TÅKE',
-  61:'REGN',
-  71:'SNØ'
-};
-
-async function fetchWeather(){
-  try{
-    const r = await fetch(
-      'https://api.open-meteo.com/v1/forecast?latitude=59.551606&longitude=11.168506&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&wind_speed_unit=ms&timezone=Europe%2FOslo'
-    );
-
-    const d = await r.json();
-    const c = d.current;
-
-    const desc = WMO[c.weather_code] || 'UKJENT';
-
-    document.getElementById('wx-stat').innerHTML = `
-      <div style="font-size:18px;font-weight:800">
-        ${Math.round(c.temperature_2m)}°C
-      </div>
-      <div style="font-size:9px;color:var(--grey)">
-        ${desc}
-      </div>
-    `;
-
-    document.getElementById('wx-detail').innerHTML = `
-      <div class="wx-grid">
-
-        <div>
-          <div class="wx-label">TEMP</div>
-          <div class="wx-val">${Math.round(c.temperature_2m)}°C</div>
-        </div>
-
-        <div>
-          <div class="wx-label">FUKTIGHET</div>
-          <div class="wx-val">${c.relative_humidity_2m}%</div>
-        </div>
-
-        <div>
-          <div class="wx-label">VIND</div>
-          <div class="wx-val">${c.wind_speed_10m} M/S</div>
-        </div>
-
-        <div>
-          <div class="wx-label">FORHOLD</div>
-          <div class="wx-val" style="font-size:13px">${desc}</div>
-        </div>
-
-      </div>
-    `;
-
-  } catch(e){
-
-    console.error(e);
-
-    document.getElementById('wx-stat').innerHTML =
-      '<span class="err">ERR</span>';
-  }
-}
-
-/* USD/NOK */
 
 async function fetchUsdNok(){
 
@@ -560,261 +480,6 @@ async function fetchUsdNok(){
   }
 }
 
-/* FEAR GREED */
-
-async function fetchFearGreed(){
-
-  try{
-
-    const r = await fetch(
-      'https://api.alternative.me/fng/?limit=1'
-    );
-
-    const d = await r.json();
-
-    const val = d.data[0].value;
-
-    document.getElementById('fg-val').innerHTML =
-      `<div style="font-size:24px;font-weight:800">${val}</div>`;
-
-  } catch(e){
-
-    console.error(e);
-
-    document.getElementById('fg-val').innerHTML =
-      '<span class="err">ERR</span>';
-  }
-}
-
-/* CHARTS */
-
-function drawChart(canvasId, prices, color){
-
-  const canvas = document.getElementById(canvasId);
-
-  const ctx = canvas.getContext('2d');
-
-  const W = canvas.width = canvas.offsetWidth;
-  const H = canvas.height = 120;
-
-  ctx.clearRect(0,0,W,H);
-
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-
-  prices.forEach((p,i)=>{
-
-    const x = (i/(prices.length-1))*W;
-    const y = H - ((p-min)/(max-min))*H;
-
-    if(i===0){
-      ctx.moveTo(x,y);
-    } else {
-      ctx.lineTo(x,y);
-    }
-  });
-
-  ctx.stroke();
-}
-
-function fmtUsd(n){
-
-  if(n >= 1000){
-    return '$' + Math.round(n).toLocaleString('no-NO');
-  }
-
-  return '$' + n.toFixed(2);
-}
-
-async function fetchCharts(){
-
-  try{
-
-    const btcR = await fetch(
-      'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1'
-    );
-
-    const btcD = await btcR.json();
-
-    const btcPrices =
-      btcD.prices.map(p => p[1]);
-
-    const btcCur =
-      btcPrices[btcPrices.length-1];
-
-    document.getElementById('btc-price').textContent =
-      fmtUsd(btcCur);
-
-    drawChart(
-      'btc-chart',
-      btcPrices,
-      '#00cc44'
-    );
-
-    const ethR = await fetch(
-      'https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1'
-    );
-
-    const ethD = await ethR.json();
-
-    const ethPrices =
-      ethD.prices.map(p => p[1]);
-
-    const ethCur =
-      ethPrices[ethPrices.length-1];
-
-    document.getElementById('eth-price').textContent =
-      fmtUsd(ethCur);
-
-    drawChart(
-      'eth-chart',
-      ethPrices,
-      '#ff6600'
-    );
-
-  } catch(e){
-
-    console.error(e);
-
-    document.getElementById('btc-price').innerHTML =
-      '<span class="err">ERR</span>';
-
-    document.getElementById('eth-price').innerHTML =
-      '<span class="err">ERR</span>';
-  }
-}
-
-/* MINI CRYPTO */
-
-async function fetchMiniCrypto(){
-
-  try{
-
-    const r = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd,nok&include_24hr_change=true'
-    );
-
-    const d = await r.json();
-
-    const coins = [
-      ['BTC', d.bitcoin],
-      ['ETH', d.ethereum],
-      ['SOL', d.solana],
-      ['XRP', d.ripple]
-    ];
-
-    let rows = '';
-    let ticker = '';
-
-    coins.forEach(c=>{
-
-      const sym = c[0];
-      const data = c[1];
-
-      const chg = data.usd_24h_change || 0;
-
-      const cls =
-        chg >= 0 ? 'pos' : 'neg';
-
-      rows += `
-        <tr>
-          <td class="mc-name">${sym}</td>
-          <td class="mc-price">${fmtUsd(data.usd)}</td>
-          <td class="mc-change ${cls}">
-            ${chg.toFixed(2)}%
-          </td>
-        </tr>
-      `;
-
-      ticker += `
-        <span class="tick-item">
-          <span class="tick-sym">${sym}</span>
-          <span class="tick-price">${fmtUsd(data.usd)}</span>
-        </span>
-      `;
-    });
-
-    document.getElementById('mini-crypto-content').innerHTML =
-      `<table class="mini-crypto">${rows}</table>`;
-
-    document.getElementById('ticker-track').innerHTML =
-      ticker + ticker;
-
-  } catch(e){
-
-    console.error(e);
-
-    document.getElementById('mini-crypto-content').innerHTML =
-      '<span class="err">ERR</span>';
-  }
-}
-
-/* NOTES */
-
-const notesKey = 'crypto_web_launcher_notes';
-
-const notesEl =
-  document.getElementById('notes-area');
-
-notesEl.value =
-  localStorage.getItem(notesKey) || '';
-
-notesEl.addEventListener('input', ()=>{
-
-  localStorage.setItem(
-    notesKey,
-    notesEl.value
-  );
-});
-
-/* SEARCH */
-
-function doSearch(){
-
-  const q =
-    document.getElementById('search-input')
-    .value
-    .trim();
-
-  if(!q) return;
-
-  const base =
-    document.getElementById('search-engine')
-    .value;
-
-  window.open(
-    base + encodeURIComponent(q),
-    '_blank'
-  );
-}
-
-document
-.getElementById('search-input')
-.addEventListener('keydown', e=>{
-
-  if(e.key === 'Enter'){
-    doSearch();
-  }
-});
-
-/* INIT */
-
-fetchWeather();
 fetchUsdNok();
-fetchFearGreed();
-fetchCharts();
-fetchMiniCrypto();
-
-setInterval(fetchWeather, 300000);
-setInterval(fetchUsdNok, 60000);
-setInterval(fetchFearGreed, 300000);
-setInterval(fetchCharts, 300000);
-setInterval(fetchMiniCrypto, 60000);
-
-</script>
 </body>
 </html>

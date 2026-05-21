@@ -399,7 +399,7 @@
 
   <!-- WEATHER DETAIL -->
   <div class="panel">
-    <div class="panel-header">METEOROLOGI — ASKIM <span><button class="rbtn" onclick="fetchWeather()">⟳</button></span></div>
+    <div class="panel-header">VÆR — ASKIM <span><button class="rbtn" onclick="fetchWeather()">⟳</button></span></div>
     <div id="wx-detail"><span class="loading">henter...</span></div>
   </div>
 
@@ -465,7 +465,7 @@
 
   async function fetchWeather() {
     try {
-      const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.551606&longitude=11.168506&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weathercode&wind_speed_unit=ms&timezone=Europe%2FOslo');
+      const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=59.5516&longitude=11.1685&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weathercode&wind_speed_unit=ms&timezone=Europe%2FOslo');
       const d = await r.json();
       const c = d.current;
       const desc = WMO[c.weathercode] || 'UKJENT';

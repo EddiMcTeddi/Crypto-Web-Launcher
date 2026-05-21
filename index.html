@@ -743,7 +743,9 @@ async function fetchUsdNok() {
   setInterval(fetchMiniCrypto, 60000);
   setInterval(fetchCharts, 300000);
   setInterval(fetchWeather, 300000);
-  setInterval(fetchUsdNok, 60000);
+const r = await fetch('https://open.er-api.com/v6/latest/USD');
+const d = await r.json();
+const rate = d.rates.NOK;
   setInterval(fetchFearGreed, 300000);
 function doSearch() {
   const q = document.getElementById('search-input').value.trim();

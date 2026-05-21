@@ -664,7 +664,38 @@
     try {
       const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NOK');
       const d = await r.json();
-      const rate = d.rates.NOK;
+async function fetchUsdNok() {
+  try {
+    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NOK');
+
+    if (!r.ok) {
+      throw new Error('HTTP ' + r.status);
+    }
+
+    const d = await r.json();
+
+    if (!d.rates || !d.rates.NOK) {
+      throw new Error('Ingen NOK-rate');
+    }
+
+    const rate = d.rates.NOK;
+
+    document.getElementById('usdnok-val').innerHTML =
+      `<div class="usdnok-val">${rate.toFixed(4)}</div>`;
+
+    document.getElementById('usdnok-sub').textContent =
+      `1 USD = ${rate.toFixed(2)} NOK`;
+
+  } catch(e) {
+    console.error('USD/NOK FEIL:', e);
+
+    document.getElementById('usdnok-val').innerHTML =
+      '<span class="err">ERR</span>';
+
+    document.getElementById('usdnok-sub').textContent =
+      'Kunne ikke hente valutadata';
+  }
+}
       document.getElementById('usdnok-val').innerHTML =
         `<div class="usdnok-val">${rate.toFixed(4)}</div>`;
       document.getElementById('usdnok-sub').textContent = '1 USD = ' + rate.toFixed(2) + ' NOK';

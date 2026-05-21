@@ -660,30 +660,19 @@
   }
 
   /* ── USD/NOK ── */
-  async function fetchUsdNok() {
-    try {
-      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NOK');
-      const d = await r.json();
 async function fetchUsdNok() {
   try {
-    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NOK');
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
 
     if (!r.ok) {
-      throw new Error('HTTP ' + r.status);
+      throw new Error('HTTP ERROR');
     }
 
     const d = await r.json();
 
     if (!d.rates || !d.rates.NOK) {
-      throw new Error('Ingen NOK-rate');
+      throw new Error('NO NOK RATE');
     }
-
-async function fetchUsdNok() {
-  try {
-    const r = await fetch('https://open.er-api.com/v6/latest/USD');
-    const d = await r.json();
-
-    console.log(d);
 
     const rate = d.rates.NOK;
 
@@ -698,6 +687,9 @@ async function fetchUsdNok() {
 
     document.getElementById('usdnok-val').innerHTML =
       '<span class="err">ERR</span>';
+
+    document.getElementById('usdnok-sub').textContent =
+      'API FAIL';
   }
 }
 

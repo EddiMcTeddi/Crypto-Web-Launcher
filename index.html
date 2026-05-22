@@ -560,16 +560,20 @@
   }
 
   function fmtUsd(n) {
-    return n >= 1000 ? '$' + Math.round(n).toLocaleString('no-NO') : '$' + n.toFixed(2);
+    return n >= 1000 ? '$' + Math.round(n).toLocaleString('no-NO') : '$' + Number(n).toFixed(2);
   }
 
   let cachedBtcPrices = [], cachedEthPrices = [], cachedBtcColor = '#00cc44', cachedEthColor = '#00cc44';
 
+  /* Henter 24H historikk fra CoinCap (intervall hvert 15. min = 96 punkter) */
   async function fetchCharts() {
+    const end = Date.now();
+    const start = end - 24 * 60 * 60 * 1000;
+
     try {
-      const btcR = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1');
+      const btcR = await fetch(`https://api.coincap.io/v2/assets/bitcoin/history?interval=m15&start=${start}&end=${end}`);
       const btcD = await btcR.json();
-      cachedBtcPrices = btcD.prices.map(p => p[1]);
+      cachedBtcPrices = btcD.data.map(p => parseFloat(p.priceUsd));
       const btcCur = cachedBtcPrices[cachedBtcPrices.length-1], btcOpen = cachedBtcPrices[0];
       const btcChg = ((btcCur - btcOpen) / btcOpen) * 100;
       document.getElementById('btc-price').textContent = fmtUsd(btcCur);
@@ -579,12 +583,14 @@
       btcChgEl.className = 'chart-change ' + (btcChg >= 0 ? 'pos' : 'neg');
       document.getElementById('btc-hl').innerHTML = `H: ${fmtUsd(Math.max(...cachedBtcPrices))}<br>L: ${fmtUsd(Math.min(...cachedBtcPrices))}`;
       drawChart('btc-chart', cachedBtcPrices, cachedBtcColor);
+    } catch(e) {
+      document.getElementById('btc-price').innerHTML = '<span class="err">API ERR</span>';
+    }
 
-      await new Promise(r => setTimeout(r, 1000));
-
-      const ethR = await fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=1');
+    try {
+      const ethR = await fetch(`https://api.coincap.io/v2/assets/ethereum/history?interval=m15&start=${start}&end=${end}`);
       const ethD = await ethR.json();
-      cachedEthPrices = ethD.prices.map(p => p[1]);
+      cachedEthPrices = ethD.data.map(p => parseFloat(p.priceUsd));
       const ethCur = cachedEthPrices[cachedEthPrices.length-1], ethOpen = cachedEthPrices[0];
       const ethChg = ((ethCur - ethOpen) / ethOpen) * 100;
       document.getElementById('eth-price').textContent = fmtUsd(ethCur);
@@ -595,36 +601,40 @@
       document.getElementById('eth-hl').innerHTML = `H: ${fmtUsd(Math.max(...cachedEthPrices))}<br>L: ${fmtUsd(Math.min(...cachedEthPrices))}`;
       drawChart('eth-chart', cachedEthPrices, cachedEthColor);
     } catch(e) {
-      document.getElementById('btc-price').innerHTML = '<span class="err">API ERR</span>';
       document.getElementById('eth-price').innerHTML = '<span class="err">API ERR</span>';
     }
   }
 
-  /* ALT COINS */
+  /* ALT COINS via CoinCap */
   async function fetchMiniCrypto() {
+    const ids = 'bitcoin,ethereum,solana,ripple,binance-coin,cardano,polkadot,avalanche';
     try {
-      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,binancecoin,cardano,polkadot,avalanche-2&vs_currencies=usd&include_24hr_change=true');
+      const r = await fetch(`https://api.coincap.io/v2/assets?ids=${ids}`);
       const d = await r.json();
-      const coins = [
-        { sym: 'BTC',  data: d.bitcoin },
-        { sym: 'ETH',  data: d.ethereum },
-        { sym: 'SOL',  data: d.solana },
-        { sym: 'XRP',  data: d.ripple },
-        { sym: 'BNB',  data: d['binancecoin'] },
-        { sym: 'ADA',  data: d.cardano },
-        { sym: 'DOT',  data: d.polkadot },
-        { sym: 'AVAX', data: d['avalanche-2'] },
-      ];
+
+      /* CoinCap returnerer ikke nødvendigvis i riktig rekkefølge */
+      const order = ['bitcoin','ethereum','solana','ripple','binance-coin','cardano','polkadot','avalanche'];
+      const syms  = { bitcoin:'BTC', ethereum:'ETH', solana:'SOL', ripple:'XRP',
+                      'binance-coin':'BNB', cardano:'ADA', polkadot:'DOT', avalanche:'AVAX' };
+
+      const map = {};
+      d.data.forEach(a => { map[a.id] = a; });
+
+      const coins = order.map(id => ({
+        sym:  syms[id],
+        usd:  parseFloat(map[id]?.priceUsd || 0),
+        chg:  parseFloat(map[id]?.changePercent24Hr || 0),
+      }));
 
       const half = Math.ceil(coins.length / 2);
 
       function makeRows(arr) {
         return arr.map(c => {
-          const chg = c.data.usd_24h_change, cls = chg >= 0 ? 'pos' : 'neg', arrow = chg >= 0 ? '▲' : '▼';
+          const cls = c.chg >= 0 ? 'pos' : 'neg', arrow = c.chg >= 0 ? '▲' : '▼';
           return `<tr>
             <td class="mc-name">${c.sym}</td>
-            <td class="mc-price">${fmtUsd(c.data.usd)}</td>
-            <td class="mc-change ${cls}">${arrow} ${Math.abs(chg).toFixed(1)}%</td>
+            <td class="mc-price">${fmtUsd(c.usd)}</td>
+            <td class="mc-change ${cls}">${arrow} ${Math.abs(c.chg).toFixed(1)}%</td>
           </tr>`;
         }).join('');
       }
@@ -636,8 +646,8 @@
         </div>`;
 
       const items = coins.map(c => {
-        const chg = c.data.usd_24h_change, cls = chg >= 0 ? 'pos' : 'neg', arrow = chg >= 0 ? '▲' : '▼';
-        return `<span class="tick-item"><span class="tick-sym">${c.sym}</span><span class="tick-price">${fmtUsd(c.data.usd)}</span><span class="${cls}">${arrow} ${Math.abs(chg).toFixed(2)}%</span></span>`;
+        const cls = c.chg >= 0 ? 'pos' : 'neg', arrow = c.chg >= 0 ? '▲' : '▼';
+        return `<span class="tick-item"><span class="tick-sym">${c.sym}</span><span class="tick-price">${fmtUsd(c.usd)}</span><span class="${cls}">${arrow} ${Math.abs(c.chg).toFixed(2)}%</span></span>`;
       });
       document.getElementById('ticker-track').innerHTML = [...items,...items,...items,...items].join('');
 
@@ -694,7 +704,7 @@
   fetchUsdNok();
   fetchFearGreed();
   fetchMiniCrypto();
-  setTimeout(fetchCharts, 800);
+  setTimeout(fetchCharts, 500);
 
   setInterval(fetchMiniCrypto, 60000);
   setInterval(fetchCharts,    300000);
